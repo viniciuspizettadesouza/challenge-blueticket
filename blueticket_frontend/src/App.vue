@@ -5,25 +5,13 @@
       color="primary"
       dark
     >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
+      <v-img
+        alt="Vuetify Name"
+        class="shrink mt-1"
+        contain
+        src="https://blueticket-cdn.s3.amazonaws.com/assets/icons/logo_blueticket_header.svg"
+        width="100"
+      />
     </v-app-bar>
 
     <v-main>
