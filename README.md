@@ -1,7 +1,6 @@
 # challenge-blueticket
 ### blueticket - desafio técnico vue.js
 
-
 Este desafio tem o objetivo de avaliar melhor suas skills como desenvolvedor, não apenas raciocínio lógico, mas também organização, capacidade de resolver
 problemas, engenhosidade, clareza do código, detalhamento visual, etc.
 
@@ -29,3 +28,28 @@ O que será avaliado
 ● Uso do Git
 
 Finalizado, nos conte quais as facilidades na execução do projeto e quais foram os principais desafios encontrados.
+
+# blueticket_frontend
+
+## Project setup
+```
+yarn install
+```
+
+### Compiles and hot-reloads for development
+```
+yarn serve
+```
+
+### Compiles and minifies for production
+```
+yarn build
+```
+
+### Lints and fixes files
+```
+yarn lint
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
