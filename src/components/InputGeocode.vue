@@ -25,7 +25,6 @@
             <template v-slot:default>
               <thead>
               <tr>
-                <th>Hour</th>
                 <th>Temperature</th>
                 <th>Feels Like</th>
                 <th>Humidity</th>
@@ -35,16 +34,9 @@
               </thead>
               <tbody>
               <tr
-                v-for="item in time"
-                :key="item.name"
-              >
-                <td></td>
-              </tr>
-              <tr
                 v-for="item in weatherCache"
                 :key="item.name"
               >
-                <td></td>
                 <td>{{ Math.round(item.temp) }}º C</td>
                 <td>{{ Math.round(item.feels_like) }}º C</td>
                 <td>{{ item.humidity }}%</td>
@@ -69,7 +61,6 @@ export default {
       latitude: null,
       longitude: null,
       geocodeResponse: null,
-      weatherResponse: [],
       weatherCache: [],
       searchCache: []
     }
