@@ -4,21 +4,16 @@
       <v-row justify="center" align="center">
         <v-col cols="6">
           <v-row class="ma-0">
-            <v-text-field
-              label="Search City"
-              v-model="search"
-              :append-icon="marker = 'mdi-crosshairs-gps'"
-              @click:append="reverseGeocoding"
-            ></v-text-field>
+            <v-combobox label="Search City" v-model="search" :items="searchCache" change>
+              <template v-slot:append-outer>
+                <v-icon @click="reverseGeocoding" v-text="'mdi-crosshairs-gps'"></v-icon>
+              </template>
+            </v-combobox>
           </v-row>
         </v-col>
         <v-col cols="2">
           <v-row>
-            <v-btn
-              height="32"
-              color="primary"
-              @click="geocoding(search)"
-            >
+            <v-btn height="32" color="primary" @click="geocoding(search)">
               Search
             </v-btn>
           </v-row>
@@ -30,24 +25,12 @@
             <template v-slot:default>
               <thead>
               <tr>
-                <th class="text-left">
-                  Hour
-                </th>
-                <th class="text-left">
-                  Temperature
-                </th>
-                <th class="text-left">
-                  Feels Like
-                </th>
-                <th class="text-left">
-                  Humidity
-                </th>
-                <th class="text-left">
-                  Weather
-                </th>
-                <th class="text-left">
-                  Weather Description
-                </th>
+                <th>Hour</th>
+                <th>Temperature</th>
+                <th>Feels Like</th>
+                <th>Humidity</th>
+                <th>Weather</th>
+                <th>Weather Description</th>
               </tr>
               </thead>
               <tbody>
@@ -58,7 +41,7 @@
                 <td></td>
               </tr>
               <tr
-                v-for="item in weatherCache[0]"
+                v-for="item in weatherCache"
                 :key="item.name"
               >
                 <td></td>
@@ -87,21 +70,20 @@ export default {
       longitude: null,
       geocodeResponse: null,
       weatherResponse: [],
-      weatherCache: null
+      weatherCache: [],
+      searchCache: []
     }
   },
   created() {
     this.getWeather()
+    this.getSearch()
   },
   methods: {
-    toggleMarker() {
-      this.marker = !this.marker
-    },
     getLocation() {
       navigator.geolocation.getCurrentPosition(
         position => {
           this.latitude = position.coords.latitude
-          this.longitude = position.coords.longitude
+          return this.longitude = position.coords.longitude
         },
         error => {
           console.log(error.message)
@@ -113,24 +95,35 @@ export default {
         this.weatherCache = JSON.parse(localStorage.getItem('weatherCache'))
       }
     },
+    getSearch() {
+      if (localStorage.getItem('searchCache') != null) {
+        this.searchCache = JSON.parse(localStorage.getItem('searchCache'))
+      }
+    },
     geocoding(search) {
-      console.log(search)
+      let lat = this.latitude
+      let long = this.longitude
+      this.cacheSearch(search)
       fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" +
         search + "&key=AIzaSyD6rKc6URJVJv5GNgNydJxd19jitau6pg0")
         .then(response => response.json()
           .then(json => {
             this.geocodeResponse = json.results[0]
-            console.log(this.geocodeResponse)
+            lat = this.geocodeResponse.geometry.location.lat
+            long = this.geocodeResponse.geometry.location.lng
+            this.weatherOneCallAPI(lat, long)
           }).catch(error => {
             console.error('Failed retrieving information', error)
           })
         )
+      search = null
     },
     reverseGeocoding() {
       this.getLocation()
       let lat = this.latitude
       let long = this.longitude
-      if (this.latitude === null && this.longitude === null) {
+
+      if (lat === null || long === null) {
         console.log('Cannot get Location')
       } else {
         fetch("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
@@ -138,7 +131,6 @@ export default {
           .then(response => response.json()
             .then(json => {
               this.geocodeResponse = json.results[0]
-              console.log(this.geocodeResponse)
               this.weatherOneCallAPI(lat, long)
             }).catch(error => {
               console.error('Failed retrieving information', error)
@@ -147,7 +139,6 @@ export default {
       }
     },
     weatherOneCallAPI(lat, long) {
-      console.log(lat, long)
       fetch("https://api.openweathermap.org/data/2.5/onecall?lat=" +
         lat + "&lon=" + long + "&exclude=current,minutely,daily,alerts&units=metric" + "&appid=df615fedcb948b4c0c9a73b87a1a6067")
         .then(response => response.json()
@@ -159,10 +150,19 @@ export default {
         )
     },
     cacheWeather(weather) {
-      console.log(weather)
-      this.weatherResponse.push(weather.hourly)
-      localStorage.setItem('weatherCache', JSON.stringify(this.weatherResponse))
-    }
+      window.localStorage.removeItem('weatherCache')
+      if (weather != null) {
+        this.weatherCache = weather.hourly
+        localStorage.setItem('weatherCache', JSON.stringify(this.weatherCache))
+      }
+    },
+    cacheSearch(search) {
+      let include = this.searchCache.includes(search)
+      if (search != null && include !== true) {
+        this.searchCache.push(search)
+        localStorage.setItem('searchCache', JSON.stringify(this.searchCache))
+      }
+    },
   }
 }
 </script>
